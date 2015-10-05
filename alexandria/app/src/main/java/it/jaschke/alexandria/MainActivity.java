@@ -15,6 +15,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import it.jaschke.alexandria.api.Callback;
@@ -48,8 +49,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         }
 
         messageReciever = new MessageReciever();
-        IntentFilter filter = new IntentFilter(MESSAGE_EVENT);
-        LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever,filter);
 
         navigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -57,7 +56,16 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
         // Set up the drawer.
         navigationDrawerFragment.setUp(R.id.navigation_drawer,
-                    (DrawerLayout) findViewById(R.id.drawer_layout));
+                (DrawerLayout) findViewById(R.id.drawer_layout));
+    }
+
+    public void performBookScan() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment nextFragment = new BookScanner();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, nextFragment)
+                .addToBackStack((String) title)
+                .commit();
     }
 
     @Override
@@ -79,7 +87,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 break;
 
         }
-
         fragmentManager.beginTransaction()
                 .replace(R.id.container, nextFragment)
                 .addToBackStack((String) title)

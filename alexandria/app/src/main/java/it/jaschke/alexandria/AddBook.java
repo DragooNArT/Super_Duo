@@ -1,19 +1,26 @@
 package it.jaschke.alexandria;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,10 +43,19 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
     private String mScanFormat = "Format:";
     private String mScanContents = "Contents:";
+    private String bookNum;
 
-
+    private BroadcastReceiver receiver = null;
 
     public AddBook(){
+    }
+
+    public BroadcastReceiver getReceiver() {
+        return receiver;
+    }
+
+    public  void setBookNum(String bookNum) {
+        this.bookNum = bookNum;
     }
 
     @Override
@@ -50,11 +66,28 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         }
     }
 
+    private class MessageReciever extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getStringExtra(MainActivity.MESSAGE_KEY)!=null){
+                ((TextView) rootView.findViewById(R.id.bookTitle)).setText("Book Not Found");
+
+                ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(intent.getStringExtra(MainActivity.MESSAGE_KEY));
+                ((TextView) rootView.findViewById(R.id.bookTitle)).requestFocus();
+                //Toast.makeText(MainActivity.this, intent.getStringExtra(MESSAGE_KEY), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_add_book, container, false);
         ean = (EditText) rootView.findViewById(R.id.ean);
+        receiver = new MessageReciever();
+        IntentFilter filter = new IntentFilter(MainActivity.MESSAGE_EVENT);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver,filter);
+
 
         ean.addTextChangedListener(new TextWatcher() {
             @Override
@@ -69,39 +102,64 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
             @Override
             public void afterTextChanged(Editable s) {
-                String ean =s.toString();
+                String ean = s.toString();
                 //catch isbn10 numbers
-                if(ean.length()==10 && !ean.startsWith("978")){
-                    ean="978"+ean;
+                if (ean.length() == 10 && !ean.startsWith("978")) {
+                    ean = "978" + ean;
                 }
-                if(ean.length()<13){
+                if (ean.length() < 13) {
                     clearFields();
                     return;
                 }
-                //Once we have an ISBN, start a book intent
-                Intent bookIntent = new Intent(getActivity(), BookService.class);
-                bookIntent.putExtra(BookService.EAN, ean);
-                bookIntent.setAction(BookService.FETCH_BOOK);
-                getActivity().startService(bookIntent);
-                AddBook.this.restartLoader();
+                fetchBook(ean);
             }
         });
+
+        ean.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+        ean.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    CharSequence ean =  v.getText();
+
+                    //catch isbn10 numbers
+                    if (ean.length() == 10 && !ean.toString().startsWith("978")) {
+                        ean = "978" + ean;
+                    }
+                    if (ean.length() < 13) {
+                        clearFields();
+                        return false;
+                    }
+                    fetchBook(ean.toString());
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        if (bookNum != null) {
+            ean.setText(bookNum);
+        }
 
         rootView.findViewById(R.id.scan_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // This is the callback method that the system will invoke when your button is
-                // clicked. You might do this by launching another app or by including the
-                //functionality directly in this app.
-                // Hint: Use a Try/Catch block to handle the Intent dispatch gracefully, if you
-                // are using an external app.
-                //when you're done, remove the toast below.
-                Context context = getActivity();
-                CharSequence text = "This button should let you scan a book for its barcode!";
-                int duration = Toast.LENGTH_SHORT;
 
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
+
+                if(getActivity() instanceof MainActivity) {
+
+                    MainActivity activity = (MainActivity) getActivity();
+                    activity.performBookScan();
+                }
+
 
             }
         });
@@ -130,6 +188,19 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         }
 
         return rootView;
+    }
+    private void hideKeyboard(View v ) {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+    }
+    private void fetchBook(String ean) {
+        //Once we have an ISBN, start a book intent
+        Intent bookIntent = new Intent(getActivity(), BookService.class);
+        bookIntent.putExtra(BookService.EAN, ean);
+        bookIntent.setAction(BookService.FETCH_BOOK);
+        getActivity().startService(bookIntent);
+        AddBook.this.restartLoader();
     }
 
     private void restartLoader(){
@@ -168,9 +239,11 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(bookSubTitle);
 
         String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
-        String[] authorsArr = authors.split(",");
-        ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
-        ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",","\n"));
+        if(authors != null) {
+            String[] authorsArr = authors.split(",");
+            ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
+            ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",", "\n"));
+        }
         String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
         if(Patterns.WEB_URL.matcher(imgUrl).matches()){
             new DownloadImage((ImageView) rootView.findViewById(R.id.bookCover)).execute(imgUrl);
@@ -182,6 +255,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
         rootView.findViewById(R.id.save_button).setVisibility(View.VISIBLE);
         rootView.findViewById(R.id.delete_button).setVisibility(View.VISIBLE);
+        hideKeyboard(rootView);
     }
 
     @Override
