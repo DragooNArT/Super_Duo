@@ -39,8 +39,8 @@ public class myFetchService extends IntentService
     @Override
     protected void onHandleIntent(Intent intent)
     {
-        getData("n2");
-        getData("p2");
+        getData("n3");
+        getData("p3");
 
         return;
     }
@@ -196,7 +196,13 @@ public class myFetchService extends IntentService
                         League.equals(SERIE_A)             ||
                         League.equals(BUNDESLIGA1)         ||
                         League.equals(BUNDESLIGA2)         ||
-                        League.equals(PRIMERA_DIVISION)     )
+                        League.equals(LIGUE1)              ||
+                        League.equals(LIGUE2)              ||
+                        League.equals(PRIMERA_LIGA)        ||
+                        League.equals(EREDIVISIE)          ||
+                        League.equals(Bundesliga3)         ||
+                        League.equals(PRIMERA_DIVISION))
+
                 {
                     match_id = match_data.getJSONObject(LINKS).getJSONObject(SELF).
                             getString("href");

@@ -35,6 +35,7 @@ public class scoresAdapter extends CursorAdapter
     public View newView(Context context, Cursor cursor, ViewGroup parent)
     {
         View mItem = LayoutInflater.from(context).inflate(R.layout.scores_list_item, parent, false);
+
         ViewHolder mHolder = new ViewHolder(mItem);
         mItem.setTag(mHolder);
         //Log.v(FetchScoreTask.LOG_TAG,"new View inflated");
@@ -47,6 +48,7 @@ public class scoresAdapter extends CursorAdapter
         final ViewHolder mHolder = (ViewHolder) view.getTag();
         mHolder.home_name.setText(cursor.getString(COL_HOME));
         mHolder.away_name.setText(cursor.getString(COL_AWAY));
+        view.setContentDescription(String.format(context.getString(R.string.match_detail_description), cursor.getString(COL_HOME), cursor.getString(COL_AWAY)));
         mHolder.date.setText(cursor.getString(COL_MATCHTIME));
         mHolder.score.setText(Utilies.getScores(cursor.getInt(COL_HOME_GOALS),cursor.getInt(COL_AWAY_GOALS)));
         mHolder.match_id = cursor.getDouble(COL_ID);
