@@ -10,8 +10,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_weight="1"
             android:textDirection="anyRtl"
+            android:layout_weight="1"
             android:text="@string/test_text"
             android:textColor="@android:color/black"
             android:textSize="@dimen/League"
@@ -34,15 +34,14 @@
         <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-            android:textDirection="anyRtl"
-            android:layoutDirection="locale"
         android:layout_gravity="center"
+            android:textDirection="anyRtl"
         android:gravity="center"
         android:text="@string/share_text"
         android:id="@+id/share_button"
         android:drawableLeft="@android:drawable/ic_menu_share"
-            android:paddingLeft="120dp"
-            android:paddingRight="120dp" />
+            android:paddingEnd="120dp"
+            android:paddingStart="120dp" />
     </FrameLayout>
 
 </LinearLayout>
