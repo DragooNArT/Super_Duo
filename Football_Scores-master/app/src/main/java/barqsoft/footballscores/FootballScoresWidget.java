@@ -30,12 +30,8 @@ public class FootballScoresWidget extends AppWidgetProvider {
 
     @Override
     public void onEnabled(Context context) {
-        // Enter relevant functionality for when the first widget is created
-       // ScoresDBHelper.
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.football_scores_widget);
-        //final ListView score_list = (ListView) rootView.findViewById(R.id.scores_list);
         mAdapter = new scoresAdapter(context,null,0);
-       // score_list.setAdapter(mAdapter);
 
 
     }
@@ -47,14 +43,6 @@ public class FootballScoresWidget extends AppWidgetProvider {
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
-
-//        CharSequence widgetText = context.getString(R.string.appwidget_text);
-//        // Construct the RemoteViews object
-//        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.football_scores_widget);
-//        views.setTextViewText(R.id.appwidget_text, widgetText);
-//
-//        // Instruct the widget manager to update the widget
-//        appWidgetManager.updateAppWidget(appWidgetId, views);
 
         Intent svcIntent = new Intent(context, FootballWidgetService.class);
         svcIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
