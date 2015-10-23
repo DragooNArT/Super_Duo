@@ -13,7 +13,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import barqsoft.footballscores.service.myFetchService;
@@ -43,7 +46,8 @@ public class FootballWidgetViewsFactory implements RemoteViewsService.RemoteView
         ContentProviderClient client = applicationContext.getContentResolver().acquireContentProviderClient(DatabaseContract.CONTENT_AUTHORITY);
         entries = new ArrayList<FootballDataBean>();
         try {
-            cursor =  client.query(DatabaseContract.BASE_CONTENT_URI,null,null,null,null);
+            SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
+            cursor =  client.query(DatabaseContract.scores_table.buildScoreWithDate(),null,null,new String[]{mformat.format(new Date())},null);
             cursor.moveToFirst();
             while(!cursor.isAfterLast()) {
                 FootballDataBean entry = new FootballDataBean();
@@ -58,7 +62,7 @@ public class FootballWidgetViewsFactory implements RemoteViewsService.RemoteView
                 cursor.moveToNext();
             }
             entriesCount = entries.size();
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
