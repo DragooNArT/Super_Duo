@@ -21,7 +21,6 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        forceRTLIfSupported();
         Log.d(LOG_TAG, "Reached MainActivity onCreate");
         if (savedInstanceState == null) {
             my_main = new PagerFragment();
@@ -31,13 +30,6 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private void forceRTLIfSupported()
-    {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
-            getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-        }
-    }
 
 
     @Override
