@@ -45,12 +45,12 @@ public class FootballWidgetViewsFactory implements RemoteViewsService.RemoteView
                 while (cursor.moveToNext()) {
                     FootballDataBean entry = new FootballDataBean();
 
-                    entry.setHome_name(cursor.getString(ScoresAdapter.COL_HOME));
-                    entry.setAway_name(cursor.getString(ScoresAdapter.COL_AWAY));
-                    entry.setHome_score(cursor.getInt(ScoresAdapter.COL_HOME_GOALS));
-                    entry.setAway_score(cursor.getInt(ScoresAdapter.COL_AWAY_GOALS));
-                    entry.setDate(cursor.getString(ScoresAdapter.COL_MATCHTIME));
-                    entry.setMatch_id(cursor.getInt(ScoresAdapter.COL_ID));
+                    entry.setHome_name(cursor.getString(ScoresListAdapter.COL_HOME));
+                    entry.setAway_name(cursor.getString(ScoresListAdapter.COL_AWAY));
+                    entry.setHome_score(cursor.getInt(ScoresListAdapter.COL_HOME_GOALS));
+                    entry.setAway_score(cursor.getInt(ScoresListAdapter.COL_AWAY_GOALS));
+                    entry.setDate(cursor.getString(ScoresListAdapter.COL_MATCHTIME));
+                    entry.setMatch_id(cursor.getInt(ScoresListAdapter.COL_ID));
                     entries.add(entry);
                     cursor.moveToNext();
                 }
