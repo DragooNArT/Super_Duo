@@ -38,9 +38,11 @@ public class DataFetchUtil {
         URL fetch = new URL(fetch_build.toString());
         m_connection = (HttpURLConnection) fetch.openConnection();
         m_connection.setRequestMethod("GET");
-        m_connection.addRequestProperty("X-Auth-Token",api_key);
+        //m_connection.addRequestProperty("X-Auth-Token",api_key);
         m_connection.connect();
-
+        if(m_connection.getResponseCode()!=200) {
+            throw new Exception("Error code:"+m_connection.getResponseCode()+" Message: "+m_connection.getResponseMessage());
+        }
         // Read the input stream into a String
         InputStream inputStream = m_connection.getInputStream();
         StringBuffer buffer = new StringBuffer();

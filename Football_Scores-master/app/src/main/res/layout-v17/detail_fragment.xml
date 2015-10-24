@@ -23,6 +23,7 @@
             android:textDirection="anyRtl"
             android:layout_weight="1"
             android:text="@string/test_text"
+            android:contentDescription="@string/share"
             android:textSize="@dimen/League"
             android:textColor="@android:color/black"
             android:id="@+id/matchday_textview"/>
@@ -35,13 +36,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-            android:textDirection="anyRtl"
+        android:textDirection="anyRtl"
         android:gravity="center"
         android:text="@string/share_text"
+        android:contentDescription="@string/share_desc"
         android:id="@+id/share_button"
         android:drawableLeft="@android:drawable/ic_menu_share"
-            android:paddingEnd="120dp"
-            android:paddingStart="120dp" />
+        android:paddingEnd="120dp"
+        android:paddingStart="120dp" />
     </FrameLayout>
 
 </LinearLayout>

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.widget.ListView;
 import android.widget.RemoteViews;
 
 import barqsoft.footballscores.service.FootballWidgetService;
@@ -16,7 +15,7 @@ import barqsoft.footballscores.service.FootballWidgetService;
  * Implementation of App Widget functionality.
  */
 public class FootballScoresWidget extends AppWidgetProvider {
-    private scoresAdapter mAdapter;
+    private ScoresAdapter mAdapter;
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
@@ -31,7 +30,7 @@ public class FootballScoresWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.football_scores_widget);
-        mAdapter = new scoresAdapter(context,null,0);
+        mAdapter = new ScoresAdapter(context,null,0);
 
 
     }
